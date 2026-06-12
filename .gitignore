@@ -1,0 +1,33 @@
+# Datasets and model weights
+/datasets/
+/weights/
+*.pt
+
+# Ultralytics outputs
+/runs/
+/Ultralytics/
+
+# Python caches and environments
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Local application caches
+/.matplotlib/
+/.ultralytics/
+
+# IDE and OS files
+/.vscode/
+/.idea/
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
