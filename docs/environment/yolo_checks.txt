@@ -1,0 +1,32 @@
+﻿[2K
+[2K
+Ultralytics 8.4.66  Python-3.12.7 torch-2.3.1+cu118 CUDA:0 (NVIDIA GeForce RTX 4060 Laptop GPU, 8188MiB)
+Setup complete  (32 CPUs, 31.8 GB RAM, 376.1/551.6 GB disk)
+
+OS                     Windows-11-10.0.26200-SP0
+Environment            Windows
+Python                 3.12.7
+Install                pip
+Path                   C:\Users\31367\anaconda3\envs\mypytorch\Lib\site-packages\ultralytics
+RAM                    31.80 GB
+Disk                   376.1/551.6 GB
+CPU                    Intel Core i9-14900HX
+CPU count              32
+GPU                    NVIDIA GeForce RTX 4060 Laptop GPU, 8188MiB
+GPU count              1
+CUDA                   11.8
+
+numpy                   1.26.4>=1.23.0
+matplotlib              3.11.0>=3.3.0
+opencv-python           4.13.0.92>=4.6.0
+pillow                  11.1.0>=7.1.2
+pyyaml                  6.0.3>=5.3.1
+requests                2.34.2>=2.23.0
+scipy                   1.17.1>=1.4.1
+torch                   2.3.1+cu118>=1.8.0
+torch                   2.3.1+cu118!=2.4.0,>=1.8.0; sys_platform == "win32"
+torchvision             0.18.1+cu118>=0.9.0
+psutil                  7.0.0>=5.8.0
+polars                  1.41.2>=0.20.0
+nvidia-ml-py            13.610.43>=12.0.0
+ultralytics-thop        2.0.20>=2.0.18

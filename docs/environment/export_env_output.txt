@@ -1,0 +1,13 @@
+﻿YOLOv8 Environment Information
+===============================
+Python               : 3.12.7
+Operating system     : Windows-11-10.0.26200-SP0
+CUDA (PyTorch build) : 11.8
+CUDA available       : True
+GPU                  : NVIDIA GeForce RTX 4060 Laptop GPU
+torch                : 2.3.1+cu118
+torchvision          : 0.18.1+cu118
+ultralytics          : 8.4.66
+numpy                : 1.26.4
+opencv-python        : 4.13.0.92
+Python executable    : C:\Users\31367\anaconda3\envs\mypytorch\python.exe
