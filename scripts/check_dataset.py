@@ -36,9 +36,10 @@ COLORS = [
     "#ff2d55",
 ]
 
-
+#读取一个YOLO标签文件并检查合法性，返回标签列表
 def read_labels(label_path: Path) -> list[tuple[int, float, float, float, float]]:
     labels = []
+    #逐行读取标签文件，检查格式和数值范围
     for line_number, line in enumerate(label_path.read_text(encoding="utf-8").splitlines(), start=1):
         if not line.strip():
             continue
@@ -54,7 +55,7 @@ def read_labels(label_path: Path) -> list[tuple[int, float, float, float, float]
         labels.append((class_id, *coordinates))
     return labels
 
-
+#检查train或val子集，统计图片和标签数量，返回统计结果和图片路径列表
 def inspect_split(dataset_root: Path, split: str) -> tuple[dict[str, int], list[Path]]:
     image_dir = dataset_root / "images" / split
     label_dir = dataset_root / "labels" / split
@@ -62,7 +63,7 @@ def inspect_split(dataset_root: Path, split: str) -> tuple[dict[str, int], list[
         path for path in image_dir.iterdir() if path.suffix.lower() in IMAGE_SUFFIXES
     )
     label_paths = sorted(label_dir.glob("*.txt"))
-    label_stems = {path.stem for path in label_paths}
+    label_stems = {path.stem for path in label_paths} #取文件名主体
     image_stems = {path.stem for path in image_paths}
     class_counts = Counter()
     empty_labels = 0
@@ -83,7 +84,7 @@ def inspect_split(dataset_root: Path, split: str) -> tuple[dict[str, int], list[
     }
     return result, image_paths
 
-
+#渲染一个图片和对应标签，保存到输出路径
 def render_sample(image_path: Path, label_path: Path, output_path: Path) -> None:
     with Image.open(image_path) as source:
         image = source.convert("RGB")
@@ -92,6 +93,7 @@ def render_sample(image_path: Path, label_path: Path, output_path: Path) -> None
     image_width, image_height = image.size
 
     for class_id, x_center, y_center, width, height in read_labels(label_path):
+        #转换回像素坐标
         x1 = (x_center - width / 2.0) * image_width
         y1 = (y_center - height / 2.0) * image_height
         x2 = (x_center + width / 2.0) * image_width
@@ -101,7 +103,7 @@ def render_sample(image_path: Path, label_path: Path, output_path: Path) -> None
         text = f"{class_id} {CLASS_NAMES[class_id]}"
         text_box = draw.textbbox((x1, y1), text, font=font, stroke_width=1)
         text_height = text_box[3] - text_box[1]
-        text_y = max(0, y1 - text_height - 4)
+        text_y = max(0, y1 - text_height - 4) #如果框太靠近图片顶部，就放到 0，避免文字跑出图片
         draw.rectangle((x1, text_y, x1 + text_box[2] - text_box[0] + 4, text_y + text_height + 4), fill=color)
         draw.text((x1 + 2, text_y + 2), text, fill="white", font=font, stroke_width=1, stroke_fill="black")
 
@@ -124,7 +126,7 @@ def main() -> None:
     all_images = []
     for split in ("train", "val"):
         stats, image_paths = inspect_split(args.dataset.resolve(), split)
-        all_images.extend((split, path) for path in image_paths)
+        all_images.extend((split, path) for path in image_paths) #记录所有图片路径和所属子集，后面随机抽样用
         print(f"[{split}] images={stats['images']}, labels={stats['labels']}, empty_labels={stats['empty_labels']}")
         print(
             f"[{split}] images_without_labels={stats['images_without_labels']}, "
