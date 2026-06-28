@@ -1,0 +1,23 @@
+# Stage A smoke test: E00 YOLOv8s baseline
+experiment:
+  id: E00
+  name: E00_stageA_smoke_5ep
+  type: baseline
+
+data:
+  dataset: VisDrone2019-DET
+  format: YOLO
+  config: configs/visdrone.yaml
+
+train:
+  model: yolov8s.pt
+  imgsz: 640
+  epochs: 5
+  batch: 8
+  optimizer: default
+  augment: default
+
+output:
+  project: runs/baseline
+  name: E00_stageA_smoke_5ep
+  policy: 遵循 RUNS_POLICY.md，Stage A smoke test 独立输出

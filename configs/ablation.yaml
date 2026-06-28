@@ -35,15 +35,16 @@ experiments:
       name: E01_p2_head
 
   - id: Exp3
-    name: E03_full_sod
-    description: full SOD
+    name: E03_sod_yolo_piou
+    description: full SOD with PIoU
     config: configs/sod.yaml
     changes:
-      - GFPN / RepGFPN
+      - GFPN-lite neck
       - P2 detection head
-      - C2f-EMA
-      - PIoU
-    implementation_note: 仅作为完整 SOD 消融配置标记，不实现模型代码
+      - C2f-EMA attention
+      - PIoU loss
+      - Detect 输入为 P2/P3/P4/P5
+    implementation_note: GFPN-lite、P2、C2f-EMA、PIoU 已实现
     output:
       project: runs/sod
-      name: E03_full_sod
+      name: E03_sod_yolo_piou

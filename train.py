@@ -17,6 +17,8 @@ PROJECT_BY_TYPE = {
     "ablation": "runs/ablation",
 }
 
+RUN_TYPES = frozenset(PROJECT_BY_TYPE)
+
 TRAIN_FIELD_MAP = {
     "model": "model",
     "imgsz": "imgsz",
@@ -86,7 +88,7 @@ def select_ablation(
     common = config.get("common") or {}
     output = selected.get("output") or {}
     selected_model = selected.get("model")
-    if selected.get("implementation_note") and not selected_model:
+    if selected.get("implementation_note") and not selected.get("config") and not selected_model:
         selected_model = None
 
     merged = {
@@ -108,7 +110,7 @@ def select_ablation(
             if selected_model is not None
             else (
                 None
-                if selected.get("implementation_note")
+                if selected.get("implementation_note") and not selected.get("config")
                 else (base_config.get("train") or {}).get("model")
             ),
             "imgsz": common.get("imgsz", (base_config.get("train") or {}).get("imgsz")),
@@ -164,23 +166,58 @@ def build_train_kwargs(config: dict[str, Any], project_root: Path) -> dict[str, 
     expected_project = PROJECT_BY_TYPE[exp_type]
     if project != expected_project:
         project = expected_project
+    project_path = resolve_project_path(project, project_root)
 
     name = output.get("name") or (config.get("experiment") or {}).get("name")
     if not name:
         raise ValueError("配置缺少 output.name 或 experiment.name")
 
-    kwargs["project"] = project
+    kwargs["project"] = str(project_path)
     kwargs["name"] = name
     return kwargs
 
 
-def run_train(train_kwargs: dict[str, Any]) -> None:
+def resolve_project_path(project: str, project_root: Path) -> Path:
+    """Resolve and validate YOLO project path as project-root/runs/<type>."""
+    raw = Path(project)
+    parts = raw.parts
+    if len(parts) != 2 or parts[0] != "runs" or parts[1] not in RUN_TYPES:
+        allowed = ", ".join(PROJECT_BY_TYPE.values())
+        raise ValueError(f"非法输出目录: {project!r}，必须是: {allowed}")
+
+    resolved = (project_root / raw).resolve()
+    runs_root = (project_root / "runs").resolve()
+    if runs_root not in (resolved, *resolved.parents):
+        raise ValueError(f"输出目录越界: {resolved}")
+    if any(part in {"detect", "train"} for part in resolved.relative_to(runs_root).parts):
+        raise ValueError(f"禁止 detect/train fallback 输出路径: {resolved}")
+    return resolved
+
+
+def uses_piou_loss(config: dict[str, Any]) -> bool:
+    """判断当前配置是否显式要求启用 PIoU loss。"""
+    model_config = config.get("model") or {}
+    loss_name = str(model_config.get("loss", "")).lower()
+    return loss_name == "piou"
+
+
+def run_train(train_kwargs: dict[str, Any], enable_piou: bool = False) -> None:
     """调用 Ultralytics YOLOv8 训练 API。"""
+    import gc
+
+    from models.modules import register_yolo_modules
     from ultralytics import YOLO
 
+    register_yolo_modules(enable_piou=enable_piou)
     model_path = train_kwargs.pop("model")
     model = YOLO(model_path)
-    model.train(**train_kwargs)
+    try:
+        model.train(**train_kwargs)
+    finally:
+        del model
+        gc.collect()
+        sys.stdout.flush()
+        sys.stderr.flush()
 
 
 def parse_args() -> argparse.Namespace:
@@ -198,7 +235,7 @@ def main() -> None:
         config_path = args.config if args.config.is_absolute() else project_root / args.config
         config = load_yaml(config_path)
 
-        if get_experiment_type(config) == "ablation":
+        if get_experiment_type(config) == "ablation" and config.get("experiments"):
             config = select_ablation(config, args.ablation_id, config_path.parent, project_root)
 
         train_kwargs = build_train_kwargs(config, project_root)
@@ -209,7 +246,8 @@ def main() -> None:
                 print(f"{key}: {train_kwargs[key]}")
             return
 
-        run_train(train_kwargs)
+        run_train(train_kwargs, enable_piou=uses_piou_loss(config))
+        sys.exit(0)
     except ValueError as error:
         print(f"配置错误: {error}", file=sys.stderr)
         raise SystemExit(2) from error
