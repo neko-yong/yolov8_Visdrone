@@ -1,0 +1,49 @@
+# SOD-YOLO 消融实验配置入口
+experiment:
+  type: ablation
+  purpose: 对 baseline、P2 head、完整 SOD-YOLO 进行消融对比
+
+common:
+  dataset: VisDrone2019-DET
+  data_config: configs/visdrone.yaml
+  imgsz: 640
+  epochs: 100
+  batch: 8
+  output_policy: 遵循 RUNS_POLICY.md，所有实验使用独立输出目录
+
+experiments:
+  - id: Exp1
+    name: E00_yolov8s_baseline
+    description: baseline
+    config: configs/baseline.yaml
+    model: yolov8s.pt
+    changes: none
+    output:
+      project: runs/baseline
+      name: E00_yolov8s_baseline
+
+  - id: Exp2
+    name: E01_p2_head
+    description: +P2
+    base: configs/baseline.yaml
+    changes:
+      - 新增 P2 detection head
+      - 检测尺度由 P3/P4/P5 扩展为 P2/P3/P4/P5
+    implementation_note: 仅作为消融配置标记，不实现模型代码
+    output:
+      project: runs/ablation
+      name: E01_p2_head
+
+  - id: Exp3
+    name: E03_full_sod
+    description: full SOD
+    config: configs/sod.yaml
+    changes:
+      - GFPN / RepGFPN
+      - P2 detection head
+      - C2f-EMA
+      - PIoU
+    implementation_note: 仅作为完整 SOD 消融配置标记，不实现模型代码
+    output:
+      project: runs/sod
+      name: E03_full_sod

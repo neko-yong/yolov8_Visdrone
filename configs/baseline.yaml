@@ -1,0 +1,27 @@
+# YOLOv8s baseline 冻结配置
+experiment:
+  id: E00
+  name: E00_yolov8s_visdrone_640
+  type: baseline
+
+data:
+  dataset: VisDrone2019-DET
+  format: YOLO
+  config: configs/visdrone.yaml
+
+train:
+  model: yolov8s.pt
+  imgsz: 640
+  epochs: 100
+  batch: 8
+  optimizer: default
+  optimizer_note: 使用 YOLOv8 默认优化器，不显式改动
+  lr_scheduler: default
+  lr_scheduler_note: 使用默认 Ultralytics scheduler
+  augment: default
+  augment_note: 使用默认 YOLOv8 数据增强策略
+
+output:
+  project: runs/baseline
+  name: E00_yolov8s_visdrone_640
+  policy: 遵循 RUNS_POLICY.md，禁止覆盖冻结 baseline 输出

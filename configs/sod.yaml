@@ -1,0 +1,37 @@
+# SOD-YOLO 结构标记配置
+experiment:
+  id: E03
+  name: E03_full_sod_yolo
+  type: sod
+
+base:
+  inherits: configs/baseline.yaml
+  baseline_model: yolov8s.pt
+  dataset: VisDrone2019-DET
+  data_config: configs/visdrone.yaml
+
+model:
+  backbone: YOLOv8s
+  neck: GFPN / RepGFPN
+  neck_note: 仅作为结构标记，不在本配置中实现代码
+  head: P2 + P3 + P4 + P5
+  attention: C2f-EMA
+  attention_note: 仅作为结构标记，不在本配置中实现代码
+  loss: PIoU
+  loss_note: 仅作为占位说明，不在本配置中实现代码
+
+train:
+  imgsz: 640
+  epochs: 100
+  batch: 8
+  optimizer: SGD
+  lr0: 0.005
+  momentum: 0.937
+  weight_decay: 0.0005
+  warmup_epochs: 5
+  augment: default
+
+output:
+  project: runs/sod
+  name: E03_full_sod_yolo
+  policy: 遵循 RUNS_POLICY.md，使用独立输出目录

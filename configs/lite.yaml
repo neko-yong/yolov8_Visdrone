@@ -1,0 +1,42 @@
+# SOD-YOLO 轻量化实验配置
+experiment:
+  id: E20
+  name: E20_lite_sod_yolo
+  type: lite
+
+base:
+  inherits: configs/sod.yaml
+  note: 基于 SOD-YOLO 配置进行轻量化目标标注
+
+lite_objectives:
+  channel_reduction: true
+  channel_reduction_note: 通道缩减
+  neck_simplification: true
+  neck_simplification_note: neck 简化
+  parameter_reduction: true
+  parameter_reduction_note: 参数量减少
+
+model:
+  backbone: YOLOv8s
+  neck: GFPN / RepGFPN lite placeholder
+  head: P2 + P3 + P4 + P5
+  attention: C2f-EMA
+  loss: PIoU
+  implementation_note: 仅作为轻量化目标配置，不生成或修改模型代码
+
+train:
+  flow: same_as_sod
+  flow_note: 不改变训练流程
+  imgsz: 640
+  epochs: 100
+  batch: 8
+  optimizer: SGD
+  lr0: 0.005
+  momentum: 0.937
+  weight_decay: 0.0005
+  warmup_epochs: 5
+
+output:
+  project: runs/lite
+  name: E20_lite_sod_yolo
+  policy: 遵循 RUNS_POLICY.md，使用独立输出目录
