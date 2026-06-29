@@ -1,0 +1,29 @@
+# Stage A smoke test: E02 GFPN-lite
+experiment:
+  id: E02
+  name: E02_gfpn_smoke_5ep
+  type: ablation
+
+data:
+  dataset: VisDrone2019-DET
+  format: YOLO
+  config: configs/visdrone.yaml
+
+model:
+  backbone: YOLOv8s
+  neck: GFPN-lite
+  head: P3 + P4 + P5
+  loss: default
+
+train:
+  model: models/yolov8s_gfpn_only.yaml
+  imgsz: 640
+  epochs: 5
+  batch: 8
+  optimizer: default
+  augment: default
+
+output:
+  project: runs/ablation
+  name: E02_gfpn_smoke_5ep
+  policy: 遵循 RUNS_POLICY.md，Stage A smoke test 独立输出

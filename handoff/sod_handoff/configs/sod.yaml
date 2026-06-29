@@ -1,0 +1,45 @@
+# GFPN-lite + P2 detection head 结构验证配置
+experiment:
+  id: E03
+  name: E03_sod_yolo_piou
+  type: sod
+
+base:
+  inherits: configs/baseline.yaml
+  baseline_model: yolov8s.pt
+  dataset: VisDrone2019-DET
+  data_config: configs/visdrone.yaml
+
+data:
+  dataset: VisDrone2019-DET
+  format: YOLO
+  config: configs/visdrone.yaml
+
+model:
+  backbone: YOLOv8s
+  neck: GFPN-lite (E02)
+  neck_note: 已通过 models/yolov8s_gfpn_lite.yaml 替换 YOLOv8 PAN-FPN neck
+  head: P2 + P3 + P4 + P5
+  note: 已实现P2 detection head
+  head_note: Detect 输入已扩展为 P2/P3/P4/P5，stride 为 4/8/16/32
+  attention: C2f-EMA
+  attention_note: 已在 backbone 后半部分替换部分 C2f 为 C2f-EMA
+  loss: PIoU
+  loss_note: 已通过 models/loss/piou.py 替换 YOLOv8 BboxLoss 中的 CIoU 入口
+
+train:
+  model: models/yolov8s_gfpn_lite.yaml
+  imgsz: 640
+  epochs: 100
+  batch: 8
+  optimizer: SGD
+  lr0: 0.005
+  momentum: 0.937
+  weight_decay: 0.0005
+  warmup_epochs: 5
+  augment: default
+
+output:
+  project: runs/sod
+  name: E03_sod_yolo_piou
+  policy: 遵循 RUNS_POLICY.md，使用独立输出目录

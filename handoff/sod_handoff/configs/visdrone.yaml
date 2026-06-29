@@ -1,0 +1,18 @@
+# VisDrone YOLO 数据配置模板
+# 使用前必须把 path 改成队友本机的 VisDrone_YOLO 根目录。
+
+path: /path/to/VisDrone_YOLO
+train: images/train
+val: images/val
+
+names:
+  0: pedestrian
+  1: people
+  2: bicycle
+  3: car
+  4: van
+  5: truck
+  6: tricycle
+  7: awning-tricycle
+  8: bus
+  9: motor
