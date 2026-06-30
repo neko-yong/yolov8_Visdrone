@@ -1,0 +1,33 @@
+# E03 full SOD 快速验证训练配置
+experiment:
+  id: E03
+  name: E03_full_sod_30ep_b5
+  type: sod
+
+data:
+  dataset: VisDrone2019-DET
+  format: YOLO
+  config: configs/visdrone.yaml
+
+model:
+  backbone: YOLOv8s
+  neck: GFPN-lite
+  head: P2 + P3 + P4 + P5
+  attention: C2f-EMA
+  loss: PIoU
+
+train:
+  model: models/yolov8s_gfpn_lite.yaml
+  imgsz: 640
+  epochs: 30
+  batch: 5
+  optimizer: SGD
+  lr0: 0.005
+  momentum: 0.937
+  weight_decay: 0.0005
+  augment: default
+
+output:
+  project: runs/sod
+  name: E03_full_sod_30ep_b5
+  policy: 遵循 RUNS_POLICY.md，E03 full SOD 30 epoch 快速验证
