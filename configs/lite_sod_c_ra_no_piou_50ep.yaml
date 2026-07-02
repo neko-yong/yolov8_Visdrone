@@ -1,0 +1,37 @@
+# Lite-SOD-C-RA: Lite-SOD-B + resolution-aware P2 compression, no PIoU, 50 epoch formal training.
+experiment:
+  id: E22
+  name: E22_Lite-SOD-C-RA_no_piou_50ep
+  type: sod
+
+data:
+  dataset: VisDrone2019-DET
+  format: YOLO
+  config: configs/visdrone.yaml
+
+model:
+  backbone: YOLOv8s
+  neck: GFPN-lite + selected GhostConv + RA P2 compression
+  head: P2 + P3 + P4 + P5
+  attention: C2f-EMA
+  loss: default
+  note: Lite-SOD-C-RA formal 50 epoch training, P2/P3/P4/P5 channels = 80/192/384/768, no PIoU
+
+train:
+  model: models/yolov8s_lite_sod_c_ra.yaml
+  imgsz: 640
+  epochs: 50
+  batch: 8
+  optimizer: SGD
+  lr0: 0.005
+  momentum: 0.937
+  weight_decay: 0.0005
+  workers: 0
+  cache: true
+  device: 0
+  augment: default
+
+output:
+  project: runs/sod
+  name: E22_Lite-SOD-C-RA_no_piou_50ep
+  policy: Lite-SOD-C-RA formal training, independent output, no PIoU

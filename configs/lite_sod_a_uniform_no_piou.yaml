@@ -1,0 +1,37 @@
+# Lite-SOD-A: uniform channel compression, no PIoU, 5 epoch smoke config.
+experiment:
+  id: E20
+  name: E20_Lite-SOD-A_uniform_no_piou_5ep
+  type: sod
+
+data:
+  dataset: VisDrone2019-DET
+  format: YOLO
+  config: configs/visdrone.yaml
+
+model:
+  backbone: YOLOv8s
+  neck: GFPN-lite uniform compressed
+  head: P2 + P3 + P4 + P5
+  attention: C2f-EMA
+  loss: default
+  note: Lite-SOD-A, P2/P3/P4/P5 channels = 96/192/384/768, no PIoU
+
+train:
+  model: models/yolov8s_lite_sod_a_uniform.yaml
+  imgsz: 640
+  epochs: 5
+  batch: 4
+  optimizer: SGD
+  lr0: 0.005
+  momentum: 0.937
+  weight_decay: 0.0005
+  workers: 0
+  cache: true
+  device: 0
+  augment: default
+
+output:
+  project: runs/sod
+  name: E20_Lite-SOD-A_uniform_no_piou_5ep
+  policy: Lite-SOD-A 5 epoch smoke, independent output, no PIoU
